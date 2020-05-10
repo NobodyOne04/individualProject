@@ -10,11 +10,12 @@
 **Запуск**
 =====================
 * Установка зависимостей:
-    * pip3 install -r requiraments.txt или python3 -m pip install -r requiraments.txt
+    * pip3 install -r requiraments.txt или python3 -m pip install -r requiraments.txt, 
+     иначе смотреть руководство python3 pip
 * Запуск:
     * Перейти в директорию проекта,
-    * Запуск сервера: python3 manager.py runserver с указанием хоста и порта,
-      например:  python3 manager.py runserver 127.0.0.1:8000
+    * Запуск сервера: python3 manager.py runserver с указанием хоста и порта.
+      Например:  python3 manager.py runserver 127.0.0.1:8000
 
 **Примечание**
 ===================== 
