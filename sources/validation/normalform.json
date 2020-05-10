@@ -1,9 +1,0 @@
-{
-  "type": "object",
-  "properties": {
-    "word": {"type": "string"}
-  },
-  "required": [
-    "word"
-  ]
-}

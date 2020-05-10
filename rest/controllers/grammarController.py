@@ -9,6 +9,7 @@ class GrammarHandler(APIView):
     def __init__(self):
         super().__init__()
         self.__morph = MorphAnalyzer()
+        print(self.__morph)
 
     def get(self, request):
         return render(request, 'views/grammar/form.html', {'form': TextForm()})
