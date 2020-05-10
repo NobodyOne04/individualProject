@@ -1,0 +1,26 @@
+{% extends 'views/base.html' %}
+
+{% block content %}
+
+<div class="header"><h1>Inflector</h1></div>
+<form method="POST" class="post-form">{% csrf_token %}
+    <div class="layer1">
+        {{form.word}}
+    </div>
+    <div>
+        {{ pos }}
+        {{ num }}
+    </div>
+    <a class="submit"><input type="submit" value="Определить"></a>
+</form>
+<div>
+    {% if inflected %}
+        <h1 class="answerBlock">
+        <p>Inflected :</p>
+        {% for inflection in inflected %}
+            <a><i>{{ inflection }}</i></a>
+        {% endfor %}
+    </h1>
+    {% endif %}
+</div>
+{% endblock %}

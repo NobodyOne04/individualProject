@@ -1,0 +1,22 @@
+{% extends 'views/base.html' %}
+
+{% block content %}
+
+<div class="header"><h1>Normal Form Converter</h1></div>
+<form method="POST" class="post-form">{% csrf_token %}
+    <div class="layer1">
+        {{form.word}}
+    </div>
+    <a class="submit"><input type="submit" value="Определить"></a>
+</form>
+<div>
+    {% if normals %}
+        <h1 class="answerBlock">
+            <p>Normal forms: </p>
+            {% for norm in normals %}
+                <a><i>{{ norm }}</i></a>
+            {% endfor %}
+        </h1>
+    {% endif %}
+</div>
+{% endblock %}

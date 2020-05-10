@@ -1,0 +1,14 @@
+{% load static %}
+<head>
+    <title>Morph</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+</head>
+<div class="header"><h1>Morph</h1></div>
+<body>
+<div class="services">
+    <form method="post" id="form">{% csrf_token %}
+        {{ selector }}
+        <input type="submit" value="Выбрать">
+    </form>
+</div>
+</body>

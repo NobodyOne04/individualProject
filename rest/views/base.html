@@ -1,0 +1,14 @@
+{% load static %}
+<html>
+<head>
+    <title>Morph</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+<div>
+    {% block content %}
+    {% endblock %}
+</div>
+</body>
+<a class="btn" href="/">Назад</a>
+</html>
