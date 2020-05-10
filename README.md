@@ -1,4 +1,4 @@
-**Запуск и консолные команды**
+**Запуск**
 =====================
 1. Установка зависимостей:
 * pip3 install -r requiraments.txt или python3 -m pip install -r requiraments.txt
