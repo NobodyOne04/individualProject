@@ -1,4 +1,3 @@
-from operations.config.config import Config
 import pymorphy2
 import re
 
@@ -6,7 +5,6 @@ import re
 class MorphAnalyzer:
 
     def __init__(self):
-        self.__config = Config()
         self.__morph = pymorphy2.MorphAnalyzer()
 
     def __normolize(self, sentence):
