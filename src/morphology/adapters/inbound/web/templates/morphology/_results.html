@@ -1,0 +1,6 @@
+{% if results is not None %}
+<h1 class="answerBlock">
+    <p>{{ label }}</p>
+    {% for result in results %}<a><i>{{ result }}</i></a>{% empty %}<a><i>—</i></a>{% endfor %}
+</h1>
+{% endif %}

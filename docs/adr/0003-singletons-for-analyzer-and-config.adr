@@ -1,6 +1,6 @@
 # 0003. Singletons for the analyzer and the config
 
-- Status: Accepted
+- Status: Superseded by [0004](0004-hexagonal-core-with-django-and-pymorphy3-adapters.adr)
 - Date: 2026-11-19
 
 `MorphAnalyzer` and `Config` were meant to be singletons, because a pymorphy2 analyzer holds
