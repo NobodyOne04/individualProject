@@ -1,0 +1,25 @@
+# 0003. Singletons for the analyzer and the config (as intended; see the known bug)
+
+- Status: Accepted
+- Date: 2026-11-19
+
+`MorphAnalyzer` and `Config` were meant to be singletons, because a pymorphy2 analyzer holds
+50-100 MB of dictionaries and must not be built per request. The implementation doesn't fully
+achieve it.
+
+## Technical details
+- **Reasoning** (`docs/description.txt`, Russian): one `pymorphy2.MorphAnalyzer` per request
+  would exhaust memory under load; likewise there's no need for several copies of the config.
+- **Implementation**: both override `__new__` to return a cached instance.
+- **Known bug**:
+  - `MorphAnalyzer.__new__` caches the object in `cls.instance`, but Python still runs
+    `__init__` on every call, so `pymorphy2.MorphAnalyzer()` is rebuilt every time anyway.
+  - `Config.__new__` checks `hasattr(cls, '__instance')` but assigns `cls.__instance`, which
+    Python name-mangles to `_Config__instance`, so the check never matches and every call
+    makes a new object.
+  - The fix (not applied, the project is archived): build the heavy object once at module
+    level, or guard `__init__` with an "already initialised" flag.
+
+## Technologies and alternatives
+- Alternatives: a module-level instance (the Pythonic singleton); `functools.lru_cache` on a
+  factory; Django app `ready()` hook.
