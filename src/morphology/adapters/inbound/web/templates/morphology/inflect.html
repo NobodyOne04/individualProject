@@ -1,0 +1,12 @@
+{% extends 'morphology/base.html' %}
+{% block title %} · Inflector{% endblock %}
+{% block content %}
+<div class="header"><h1>Inflector</h1></div>
+<form method="post" class="post-form">{% csrf_token %}
+    <div class="layer1">{{ form.text }}</div>
+    <div>{{ form.case }} {{ form.number }}</div>
+    {{ form.non_field_errors }}{{ form.text.errors }}
+    <a class="submit"><input type="submit" value="Определить"></a>
+</form>
+<div>{% include 'morphology/_results.html' with label='Inflected:' %}</div>
+{% endblock %}

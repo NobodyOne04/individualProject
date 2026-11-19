@@ -1,0 +1,43 @@
+# 0004. Hexagonal core; Django 5 and pymorphy3 as adapters
+
+- Status: Accepted
+- Date: 2026-11-20
+- Supersedes: [0002](0002-django-app-over-pymorphy2.adr), [0003](0003-singletons-for-analyzer-and-config.adr)
+
+The morphology logic moves into a framework-free core with a port for the analyzer; Django and
+pymorphy3 become adapters around it, wired once in a composition root. Chosen by the owner on
+2026-11-20 (hexagonal like personal-ai, modern tooling, tests without CI).
+
+## Technical details
+- **Problem**: the 2020 code mixed everything: DRF `APIView`s built their own analyzer, the
+  analyzer and config were hand-rolled singletons (broken until ADR 0003's fix), choices were
+  read from JSON through an INI file at import time, and the pins (Django 2.2, pymorphy2) no
+  longer install on current Python.
+- **Layout** (`src/morphology/`):
+  - `core/domain/`: `words()` (Cyrillic tokenizer, `ё` → `е`), `CASES` and `NUMBERS`
+    (grammeme code → Russian label), result types `WordResult(word, value)`.
+  - `core/ports/analyzer.py`: `MorphAnalyzer` protocol: `normal_form(word)`, `tags(word)`,
+    `inflect(word, grammemes)`, each returning `str | None` when the word can't be handled.
+  - `core/application/service.py`: `MorphologyService(analyzer)` with `normal_forms(text)`,
+    `grammar(text)`, `inflect(text, case, number)`; validates grammemes against the domain and
+    skips words the analyzer can't handle.
+  - `adapters/outbound/pymorphy.py`: `PymorphyAnalyzer` over `pymorphy3.MorphAnalyzer`.
+  - `adapters/inbound/web/`: the Django app: forms, thin class-based views, urls, templates,
+    CSS. Views get the service from the composition root, never build adapters.
+  - `composition.py`: `morphology_service()`, cached with `functools.cache`, builds the one
+    analyzer (50-100 MB of dictionaries) the first time it's needed. No singleton classes.
+- **Django project**: `project/` (settings, urls, wsgi); `SECRET_KEY` from
+  `DJANGO_SECRET_KEY` (random per start without it), `DEBUG` from `DJANGO_DEBUG`,
+  `ALLOWED_HOSTS` from `DJANGO_ALLOWED_HOSTS` (default `localhost,127.0.0.1`). DRF, the INI
+  config and the JSON choice files are gone.
+- **Routes** stay: `/`, `/normal`, `/grammar`, `/inflect`.
+- **Tests** (`tests/`, pytest): the core against a fake analyzer (no I/O), the pymorphy3
+  adapter against real dictionaries, and the web adapter through Django's test client.
+- **Tooling**: Python 3.12+, uv (`pyproject.toml`, `uv.lock`), ruff (lint + format), pytest
+  with pytest-django; `make check` runs them all. No CI, by choice.
+
+## Technologies and alternatives
+- Involved: Python 3.12+, Django 5.2, pymorphy3 + pymorphy3-dicts-ru, uv, ruff, pytest.
+- Alternatives: keep Django-centric code with a service module (less ceremony, but the logic
+  stays tied to the framework); FastAPI as the web adapter (the forms and templates are
+  Django's already); pymorphy2 (unmaintained, breaks on Python 3.11+).

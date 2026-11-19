@@ -1,0 +1,14 @@
+{% load static %}<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>Morph{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'morphology/styles.css' %}">
+</head>
+<body>
+<div>
+    {% block content %}{% endblock %}
+</div>
+{% block back %}<a class="btn" href="{% url 'index' %}">Назад</a>{% endblock %}
+</body>
+</html>
