@@ -29,6 +29,9 @@ into Cyrillic words and analysed word by word.
 | `sources/morph/*.json` | case and number options for the inflect form |
 | `docs/` | class diagram and the reasoning for Singleton (Russian) |
 
-Development settings only (`DEBUG = True`, a committed `SECRET_KEY`): don't deploy as is.
+Development settings (`DEBUG = True`, `ALLOWED_HOSTS = ['*']`): don't deploy as is. Set
+`DJANGO_SECRET_KEY` outside development; without it each start uses a random key.
+
+Tests: `python3 -m unittest tests.test_singletons` (no Django or pymorphy2 needed).
 
 Decisions: [docs/adr](docs/adr/README.md).

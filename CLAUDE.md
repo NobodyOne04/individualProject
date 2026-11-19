@@ -6,17 +6,19 @@ A 2020 university project: Django 2.2 web app for Russian morphology with pymorp
 ```sh
 pip install -r requiraments.txt        # note the file name's spelling
 python3 manage.py runserver 127.0.0.1:8000
+python3 -m unittest tests.test_singletons   # singletons; stubs pymorphy2
 ```
-No tests (`rest` has none).
 
 ## Layout
 - `vendor/`: Django project settings/urls/wsgi; `rest/`: the app (controllers, forms, templates).
 - `operations/`: `morph` (pymorphy2 wrapper), `config` (`config/project.conf` reader), `json` helper.
 - `sources/morph/`: case/number options; `docs/`: class diagram, Singleton rationale (Russian).
+- `tests/`: unittest checks of the singletons.
 - `docs/adr/`: decision records (`.adr`), index in `docs/adr/README.md`.
 
 ## Conventions
 - Read the ADR before changing a recorded decision; commit subjects carry its number.
-- Dev-only settings (`DEBUG`, committed `SECRET_KEY`, `ALLOWED_HOSTS = ['*']`): never deploy as is.
+- Dev-only settings (`DEBUG`, `ALLOWED_HOSTS = ['*']`): never deploy as is. `SECRET_KEY` comes from `DJANGO_SECRET_KEY`.
+- `MorphAnalyzer` and `Config` must stay singletons (ADR 0003): don't build pymorphy2 per request.
 - Old pins (Django 2.2, Python 3.7-3.8 era); upgrading is a separate, deliberate change.
 - Archived project: docs or small fixes only unless asked.

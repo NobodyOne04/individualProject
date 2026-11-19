@@ -1,5 +1,7 @@
 import os
 
+from django.core.management.utils import get_random_secret_key
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SETTINGS_PATH = os.path.dirname(os.path.dirname(__file__))
@@ -8,7 +10,8 @@ SETTINGS_PATH = os.path.dirname(os.path.dirname(__file__))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'q%m1ytm+^(6^nqwh6v@#7^q2+qxth$3z!o^qg4@%f4z8ny()@v'
+# set DJANGO_SECRET_KEY outside development; without it each start gets a random key (sessions reset)
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY') or get_random_secret_key()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
