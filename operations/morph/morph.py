@@ -5,7 +5,9 @@ import re
 class MorphAnalyzer:
 
     def __init__(self):
-        self.__morph = pymorphy2.MorphAnalyzer()
+        # __new__ hands back the cached instance, but Python still calls __init__: build the 50-100 MB analyzer once
+        if not hasattr(self, '_MorphAnalyzer__morph'):
+            self.__morph = pymorphy2.MorphAnalyzer()
 
     def __normolize(self, sentence):
         return re.compile('[a-я]+').findall(sentence.lower())

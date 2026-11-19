@@ -1,0 +1,22 @@
+# 0002. A Django app with one class-based view per operation, over pymorphy2
+
+- Status: Accepted
+- Date: 2026-11-19
+
+The analysis is pymorphy2; Django serves one page per operation (normal form, inflect,
+grammar), each a form posting text that is analysed word by word.
+
+## Technical details
+- **Routes** (`rest/urls.py`): `''` index, `grammar`, `normal`, `inflect`, each a class-based
+  view in `rest/controllers/`, templates in `rest/views/`.
+- **Analysis** (`operations/morph/morph.py`): lower-cases the text, keeps Cyrillic words
+  (`[a-я]+`), and per word returns `parse()[0].normal_form`, `tag.cyr_repr`, or an inflected
+  form for the chosen case/number (`sources/morph/cases.json`, `numbers.json`).
+- **Config**: `config/project.conf` (INI) names the JSON files; `Config` reads it.
+- **Dependencies**: `requiraments.txt` pins Django 2.2.7, djangorestframework 3.10.3,
+  pymorphy2 0.8 and its Russian dictionaries.
+
+## Technologies and alternatives
+- Involved: Python 3, Django 2.2, DRF, pymorphy2.
+- Alternatives: Flask (lighter, but the course used Django); natasha / spaCy (heavier than
+  word-level morphology needs).
