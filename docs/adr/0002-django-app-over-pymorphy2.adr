@@ -1,6 +1,6 @@
 # 0002. A Django app with one class-based view per operation, over pymorphy2
 
-- Status: Accepted
+- Status: Superseded by [0004](0004-hexagonal-core-with-django-and-pymorphy3-adapters.adr)
 - Date: 2026-11-19
 
 The analysis is pymorphy2; Django serves one page per operation (normal form, inflect,

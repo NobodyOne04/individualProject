@@ -1,37 +1,39 @@
-# individualProject
+# individualProject (morphology)
 
-A Django web app for **Russian morphological analysis** with
-[pymorphy2](https://pymorphy2.readthedocs.io) (university individual project, 2020).
-
-- **Normal form**: words to their dictionary form (singular, nominative).
-- **Inflect**: put words into a chosen form, e.g. plural accusative.
-- **Grammar**: show each word's morphological tags.
+A web app for **Russian morphological analysis** (university individual project, 2020;
+redesigned 2026): turn words into their dictionary form, show their grammatical tags, or
+inflect them into a chosen case and number. Built on [pymorphy3](https://github.com/no-plagiarism/pymorphy3).
 
 ## Run
 
 ```sh
-python3 -m venv .venv && . .venv/bin/activate
-pip install -r requiraments.txt          # Django 2.2, DRF 3.10, pymorphy2 0.8 + Russian dictionaries
-python3 manage.py runserver 127.0.0.1:8000
+make install        # uv sync: Python 3.12+, Django 5.2, pymorphy3 + Russian dictionaries
+make run            # http://127.0.0.1:8000
+make check          # ruff lint + format check, pytest
 ```
 
-Pages: `/` (index), `/normal`, `/inflect`, `/grammar`. Each has a form; the text is split
-into Cyrillic words and analysed word by word.
+Pages: `/` (pick an operation), `/normal`, `/grammar`, `/inflect`.
 
-## Layout
+## Design
 
-| Path | What |
-|---|---|
-| `vendor/` | Django project (settings, root urls, wsgi) |
-| `rest/` | the app: `urls.py`, `controllers/` (one class-based view per page), `forms.py`, `views/` (templates, CSS) |
-| `operations/morph/morph.py` | `MorphAnalyzer`: wraps pymorphy2 (normal form, tags, inflect) |
-| `operations/config/config.py` | `Config`: reads `config/project.conf` |
-| `sources/morph/*.json` | case and number options for the inflect form |
-| `docs/` | class diagram and the reasoning for Singleton (Russian) |
+Hexagonal, like [personal-ai](https://github.com/NobodyOne04/personal-ai): the logic knows nothing
+about Django or pymorphy3.
 
-Development settings (`DEBUG = True`, `ALLOWED_HOSTS = ['*']`): don't deploy as is. Set
-`DJANGO_SECRET_KEY` outside development; without it each start uses a random key.
+```
+src/morphology/
+  core/
+    domain/          words() tokenizer, CASES / NUMBERS, WordResult
+    ports/           MorphAnalyzer (normal_form, tags, inflect)
+    application/     MorphologyService: the three operations
+  adapters/
+    outbound/        PymorphyAnalyzer (pymorphy3)
+    inbound/web/     Django app: forms, views, urls, templates, CSS
+  composition.py     morphology_service(): builds the analyzer once
+project/             Django settings, urls, wsgi
+tests/               core (fake analyzer), pymorphy3 adapter, web (test client)
+```
 
-Tests: `python3 -m unittest tests.test_singletons` (no Django or pymorphy2 needed).
+Settings come from the environment: `DJANGO_SECRET_KEY` (random per start without it),
+`DJANGO_DEBUG=1`, `DJANGO_ALLOWED_HOSTS` (default `localhost,127.0.0.1`).
 
 Decisions: [docs/adr](docs/adr/README.md).

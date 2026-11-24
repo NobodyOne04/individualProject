@@ -1,24 +1,29 @@
-# individualProject
+# individualProject (morphology)
 
-A 2020 university project: Django 2.2 web app for Russian morphology with pymorphy2.
+Russian morphology web app: hexagonal core, pymorphy3 and Django 5 adapters (ADR 0004).
 
 ## Commands
 ```sh
-pip install -r requiraments.txt        # note the file name's spelling
-python3 manage.py runserver 127.0.0.1:8000
-python3 -m unittest tests.test_singletons   # singletons; stubs pymorphy2
+make install    # uv sync
+make run        # dev server, 127.0.0.1:8000
+make check      # ruff check + ruff format --check + pytest (run before every PR)
+make fmt        # ruff format + fixes
 ```
 
 ## Layout
-- `vendor/`: Django project settings/urls/wsgi; `rest/`: the app (controllers, forms, templates).
-- `operations/`: `morph` (pymorphy2 wrapper), `config` (`config/project.conf` reader), `json` helper.
-- `sources/morph/`: case/number options; `docs/`: class diagram, Singleton rationale (Russian).
-- `tests/`: unittest checks of the singletons.
+- `src/morphology/core/`: `domain/` (tokenizer, grammemes, `WordResult`), `ports/`
+  (`MorphAnalyzer` protocol), `application/` (`MorphologyService`). No Django, no pymorphy3.
+- `src/morphology/adapters/outbound/pymorphy.py`: the pymorphy3 analyzer.
+- `src/morphology/adapters/inbound/web/`: Django app (forms, views, urls, `templates/morphology/`, `static/morphology/`).
+- `src/morphology/composition.py`: the composition root, `morphology_service()`.
+- `project/`: Django settings/urls/wsgi; `manage.py` at the root.
+- `tests/`: `test_core.py` (fake analyzer), `test_pymorphy_adapter.py`, `test_web.py`.
 - `docs/adr/`: decision records (`.adr`), index in `docs/adr/README.md`.
 
 ## Conventions
 - Read the ADR before changing a recorded decision; commit subjects carry its number.
-- Dev-only settings (`DEBUG`, `ALLOWED_HOSTS = ['*']`): never deploy as is. `SECRET_KEY` comes from `DJANGO_SECRET_KEY`.
-- `MorphAnalyzer` and `Config` must stay singletons (ADR 0003): don't build pymorphy2 per request.
-- Old pins (Django 2.2, Python 3.7-3.8 era); upgrading is a separate, deliberate change.
-- Archived project: docs or small fixes only unless asked.
+- The core imports nothing from `adapters/`, Django or pymorphy3; new I/O goes behind a port.
+- Views take the service from `composition.morphology_service()`; never build analyzers in
+  views (pymorphy3 loads 50-100 MB of dictionaries).
+- Settings only from the environment (`DJANGO_SECRET_KEY`, `DJANGO_DEBUG`, `DJANGO_ALLOWED_HOSTS`).
+- New logic gets a core test with a fake analyzer.
